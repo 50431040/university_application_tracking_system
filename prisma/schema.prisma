@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  role         String    // 'student', 'parent', 'teacher', 'admin'
+  firstName    String    @map("first_name")
+  lastName     String    @map("last_name")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  student                        Student?
+  parentRelationships            StudentParentRelationship[] @relation("ParentUser")
+  parentNotes                    ParentNote[]
+
+  @@map("users")
+}
+
+model Student {
+  id               String    @id @default(cuid())
+  userId           String    @unique @map("user_id")
+  name             String
+  email            String    @unique
+  passwordHash     String    @map("password_hash")
+  graduationYear   Int?      @map("graduation_year")
+  gpa              Decimal?  @db.Decimal(3,2)
+  satScore         Int?      @map("sat_score")
+  actScore         Int?      @map("act_score")
+  targetCountries  String[]  @map("target_countries")
+  intendedMajors   String[]  @map("intended_majors")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  user                           User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications                   Application[]
+  parentRelationships            StudentParentRelationship[]   @relation("StudentRelation")
+  parentNotes                    ParentNote[]
+
+  @@map("students")
+}
+
+model University {
+  id                String      @id @default(cuid())
+  name              String
+  country           String?
+  state             String?
+  city              String?
+  usNewsRanking     Int?        @map("us_news_ranking")
+  acceptanceRate    Decimal?    @db.Decimal(4,2) @map("acceptance_rate")
+  applicationSystem String?     @map("application_system") // 'Common App', 'Coalition', 'Direct'
+  tuitionInState    Decimal?    @db.Decimal(10,2) @map("tuition_in_state")
+  tuitionOutState   Decimal?    @db.Decimal(10,2) @map("tuition_out_state")
+  applicationFee    Decimal?    @db.Decimal(6,2) @map("application_fee")
+  deadlines         Json?       // {early_decision: 'date', regular: 'date'}
+  availableMajors   String[]    @map("available_majors")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  applications      Application[]
+
+  @@map("universities")
+}
+
+model Application {
+  id               String    @id @default(cuid())
+  studentId        String    @map("student_id")
+  universityId     String    @map("university_id")
+  applicationType  String    @map("application_type") // 'Early Decision', 'Early Action', 'Regular Decision', 'Rolling Admission'
+  deadline         DateTime
+  status           String    @default("not_started") // 'not_started', 'in_progress', 'submitted', 'under_review', 'decided'
+  submittedDate    DateTime? @map("submitted_date")
+  decisionDate     DateTime? @map("decision_date")
+  decisionType     String?   @map("decision_type") // 'accepted', 'rejected', 'waitlisted'
+  notes            String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  student          Student                   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  university       University               @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  requirements     ApplicationRequirement[]
+  parentNotes      ParentNote[]
+
+  @@unique([studentId, universityId, applicationType])
+  @@map("applications")
+}
+
+model ApplicationRequirement {
+  id                String    @id @default(cuid())
+  applicationId     String    @map("application_id")
+  requirementType   String    @map("requirement_type") // 'essay', 'recommendation', 'transcript', 'test_scores'
+  status            String    @default("not_started") // 'not_started', 'in_progress', 'completed'
+  deadline          DateTime?
+  notes             String?
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  application       Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("application_requirements")
+}
+
+model StudentParentRelationship {
+  id        String   @id @default(cuid())
+  studentId String   @map("student_id")
+  parentId  String   @map("parent_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  student   Student @relation("StudentRelation", fields: [studentId], references: [id], onDelete: Cascade)
+  parent    User    @relation("ParentUser", fields: [parentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, parentId])
+  @@map("student_parent_relationships")
+}
+
+model ParentNote {
+  id            String   @id @default(cuid())
+  parentId      String   @map("parent_id")
+  studentId     String   @map("student_id")
+  applicationId String   @map("application_id")
+  note          String
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  parent        User        @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  student       Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("parent_notes")
+}
