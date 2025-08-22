@@ -1,0 +1,159 @@
+项目描述
+构建一个大学申请管理平台，帮助学生追踪他们的大学申请和进度。本评估考查对教育工作流
+程、基于角色的权限管理以及可扩展系统设计的理解。
+核心用户流程（主要焦点）
+业务背景：高中生需要申请 8-15 所大学，需要在不同的申请系统（Common App、Coalition App、
+直接申请）中追踪截止日期、要求和决定。
+主要用户角色：
+● 学生：管理他们的申请组合和追踪进度
+● 家长：监控孩子的申请状态并支持规划
+● 老师：指导多个学生完成申请流程（未来扩展）
+技术评估重点
+1. 大学选择与申请追踪（核心功能 - 60%）
+评估内容：业务逻辑、数据建模和用户工作流设计
+必需功能：
+● 大学搜索和选择，支持筛选（地理位置、专业、排名、录取率）
+● 带有截止日期和状态追踪的申请时间线
+● 显示申请管道的进度可视化
+● 每所大学的申请要求清单
+需要实现的业务规则：
+● 申请类型：提前决定（Early Decision）、提前行动（Early Action）、常规决定（Regular
+Decision）、滚动录取（Rolling Admission）
+● 状态工作流：未开始 → 进行中 → 已提交 → 审核中 → 决定（录取/拒绝/候补）
+● 截止日期管理：即将到期的视觉警报，自动状态更新
+● 大学数据：排名、地理位置、录取率、申请要求的整合
+示例数据模型（根据需要扩展）：
+SQL
+-- 包含学术档案的学生表
+CREATE TABLE students (
+id UUID PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+email VARCHAR(255) UNIQUE,
+graduation_year INTEGER,
+gpa DECIMAL(3,2),
+sat_score INTEGER,
+act_score INTEGER,
+target_countries TEXT[],
+intended_majors TEXT[]
+);
+-- 包含详细信息的大学表
+CREATE TABLE universities (
+id UUID PRIMARY KEY,
+name VARCHAR(255) NOT NULL,
+country VARCHAR(100),
+state VARCHAR(100),
+city VARCHAR(100),
+us_news_ranking INTEGER,
+acceptance_rate DECIMAL(4,2),
+application_system VARCHAR(100), -- 'Common App', 'Coalition',
+'Direct'
+tuition_in_state DECIMAL(10,2),
+tuition_out_state DECIMAL(10,2),
+application_fee DECIMAL(6,2),
+deadlines JSONB -- {early_decision: 'date', regular: 'date'}
+);
+-- 包含丰富元数据的申请追踪表
+CREATE TABLE applications (
+id UUID PRIMARY KEY,
+student_id UUID REFERENCES students(id),
+university_id UUID REFERENCES universities(id),
+application_type VARCHAR(50),
+deadline DATE,
+status VARCHAR(50),
+submitted_date DATE,
+decision_date DATE,
+decision_type VARCHAR(50), -- 'accepted', 'rejected',
+'waitlisted'
+notes TEXT,
+created_at TIMESTAMP DEFAULT NOW()
+);
+-- 申请要求追踪表
+CREATE TABLE application_requirements (
+id UUID PRIMARY KEY,
+application_id UUID REFERENCES applications(id),
+requirement_type VARCHAR(100), -- 'essay', 'recommendation',
+'transcript'
+status VARCHAR(50), -- 'not_started', 'in_progress',
+'completed'
+deadline DATE,
+notes TEXT
+);
+2. 基于角色的访问控制（架构评估 - 25%）
+评估内容：系统设计思维和安全架构
+当前范围（现在实现）：
+● 学生：对其申请的完整 CRUD 访问权限，个人资料管理
+● 家长：对孩子申请的只读访问权限 + 添加备注的能力
+可扩展设计（展示理解）：
+● 可扩展到老师和管理员的清晰权限架构
+● 基于 JWT 的身份验证与角色中间件
+● 支持未来角色扩展的数据库设计
+技术要求：
+● 当前实现与未来可扩展性之间的关注点分离
+● 带有基于角色端点的清晰 API 设计（/api/student/*、/api/parent/*）
+● 多角色访问的安全考虑（输入验证、授权）
+3. 仪表板与用户体验（UI/UX 评估 - 15%）
+评估内容：前端设计技能和以用户为中心的思维
+学生仪表板：
+● 带有状态指示器和进度条的申请概览
+● 突出显示紧急任务的截止日期日历
+● 大学比较工具（并排比较）
+● 快速统计：已提交申请、待处理、已收到决定
+家长仪表板：
+● 孩子的申请组合（带详细视图的只读）
+● 财务规划整合（学费成本、预估费用）
+● 带有备注和观察的沟通记录
+技术重点：
+● 响应式设计原则（移动优先方法）
+● 为非技术用户设计的清晰、直观界面
+● 加载状态和错误处理
+● 无障碍合规性（WCAG 2.1 AA）
+加分功能（如果时间允许）
+● 论文和成绩单的文档上传系统
+● 即将到期截止日期的自动邮件提醒
+● 基于学生档案和偏好的大学推荐引擎
+● 显示申请模式和成功率的基础分析仪表板
+● 与外部 API 的集成（Common App、大学数据服务）
+
+技术要求
+必需技术栈
+● 数据库: PostgreSQL ，需要合理的关系设计
+● 后端: Next.js API routes
+● 前端: Next.js 配合 TypeScript
+● 样式: Tailwind CSS
+部署要求
+● 在线演示: 部署到 Vercel
+● 数据库: Supabase
+● 文档: 清晰的设置和使用说明
+提交要求
+● GitHub link，包含详细的 README
+● 本地开发环境设置说明
+● 填充测试用的演示数据
+● 在线部署链接
+● 设计文档:
+○ 系统架构概述
+○ 性能优化策略
+○ 无障碍设计考虑
+○ 未来可扩展性计划
+
+提交指南
+仓库结构
+None
+project-name/
+├── README.md （详细文档）
+├── docs/
+│ ├── database-schema.md
+│ ├── api-documentation.md
+│ └── deployment-guide.md
+├── src/ 或 app/
+├── public/
+├── tests/ （如适用）
+└── .env.example
+文档要求
+你的README应该包含：
+1. 项目概述：应用程序的功能和目的
+2. 设置说明：本地开发环境的逐步设置
+3. 演示数据：如何填充测试数据进行评估
+4. 在线演示：部署应用程序的链接和测试凭据
+5. 技术决策：主要架构选择的简要说明
+6. 未来改进：有更多时间你会添加什么
+7. 已知问题：需要注意的任何限制或错误
