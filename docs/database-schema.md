@@ -2,15 +2,35 @@
 
 This document outlines the PostgreSQL database schema for the University Application Tracking System.
 
+## Architecture Design
+
+This database uses a **no foreign key constraints** approach for maximum flexibility and easier maintenance. All relationships are maintained through logical references (ID fields) and validated at the application level.
+
+### Benefits of No Foreign Key Architecture
+- **Simplified Migrations**: No cascading dependency issues during schema changes
+- **Easier Data Operations**: Bulk imports, exports, and cleanup operations are straightforward
+- **Flexible Development**: Tables can be modified independently without constraint conflicts
+- **Better Performance**: No foreign key validation overhead during writes
+- **Microservices Ready**: Each table can potentially be moved to separate services
+
+### Data Integrity Strategy
+- **Application-level validation**: All relationships validated in business logic
+- **Unique constraints**: Prevent duplicate records where needed
+- **Input validation**: Comprehensive validation at API endpoints
+- **Transaction management**: Use database transactions for multi-table operations
+
 ## Core Tables
 
 ### Students Table
-Stores student academic profiles and educational information. Each student record is linked to a user account for authentication and access control.
+Stores student academic profiles and educational information. Contains complete student data including authentication credentials for independent operation.
 
 ```sql
 CREATE TABLE students (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID UNIQUE NOT NULL, -- Logical reference to users.id (no foreign key)
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
     graduation_year INTEGER,
     gpa DECIMAL(3,2),
     sat_score INTEGER,
@@ -22,10 +42,10 @@ CREATE TABLE students (
 );
 ```
 
-**Key Changes:**
-- Removed `name`, `email`, `password_hash` - now inherited from linked `users` record
-- Added `user_id` foreign key to establish 1:1 relationship with users table
-- Student's personal information (name, email) comes from their user account
+**Architecture Notes:**
+- Maintains separate authentication data for flexibility
+- `user_id` provides logical link to users table without database constraints
+- Independent operation allows for easier data migration and maintenance
 
 ### Universities Table
 Contains university information and application details.
@@ -56,8 +76,8 @@ Tracks student applications to universities with status workflow.
 ```sql
 CREATE TABLE applications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    student_id UUID REFERENCES students(id) ON DELETE CASCADE,
-    university_id UUID REFERENCES universities(id) ON DELETE CASCADE,
+    student_id UUID NOT NULL, -- Logical reference to students.id
+    university_id UUID NOT NULL, -- Logical reference to universities.id
     application_type VARCHAR(50) NOT NULL, -- 'Early Decision', 'Early Action', 'Regular Decision', 'Rolling Admission'
     deadline DATE NOT NULL,
     status VARCHAR(50) NOT NULL DEFAULT 'not_started', -- 'not_started', 'in_progress', 'submitted', 'under_review', 'decided'
@@ -77,13 +97,29 @@ Tracks individual requirements for each application.
 ```sql
 CREATE TABLE application_requirements (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    application_id UUID REFERENCES applications(id) ON DELETE CASCADE,
-    requirement_type VARCHAR(100) NOT NULL, -- 'essay', 'recommendation', 'transcript', 'test_scores'
+    application_id UUID NOT NULL, -- Logical reference to applications.id
+    requirement_type VARCHAR(100) NOT NULL, -- 'essay', 'recommendation', 'transcript'
     status VARCHAR(50) NOT NULL DEFAULT 'not_started', -- 'not_started', 'in_progress', 'completed'
     deadline DATE,
     notes TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### University Requirements Table
+Stores the standard application requirements for each university. This serves as a template for creating application requirements when students apply.
+
+```sql
+CREATE TABLE university_requirements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    university_id UUID NOT NULL, -- Logical reference to universities.id
+    requirement_type VARCHAR(100) NOT NULL, -- 'essay', 'recommendation', 'transcript', 'portfolio', 'interview'
+    is_required BOOLEAN NOT NULL DEFAULT true, -- Whether this requirement is mandatory or optional
+    description TEXT, -- Detailed description of the requirement
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(university_id, requirement_type)
 );
 ```
 
@@ -104,9 +140,10 @@ CREATE TABLE users (
 ```
 
 **Role Relationships:**
-- **Student Role**: Links to `students` table via `user_id` (1:1 relationship)
-- **Parent Role**: Links to students through `student_parent_relationships` table (M:N relationship)
+- **Student Role**: Logically linked to `students` table via `user_id` field
+- **Parent Role**: Links to students through `student_parent_relationships` table
 - **Teacher/Admin Roles**: Reserved for future implementation
+- **No foreign key constraints**: All relationships managed at application level
 
 ### Student Parent Relationships Table
 Manages many-to-many relationships between parent users and students. This allows multiple parents to access the same student's application data, and parents to monitor multiple students.
@@ -114,17 +151,19 @@ Manages many-to-many relationships between parent users and students. This allow
 ```sql
 CREATE TABLE student_parent_relationships (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    student_id UUID REFERENCES students(id) ON DELETE CASCADE,
-    parent_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    student_id UUID NOT NULL, -- Logical reference to students.id
+    parent_id UUID NOT NULL, -- Logical reference to users.id
     created_at TIMESTAMP DEFAULT NOW(),
     UNIQUE(student_id, parent_id)
 );
 ```
 
 **Relationship Notes:**
-- `parent_id` references `users.id` where `users.role = 'parent'`
+- `parent_id` logically references `users.id` where `users.role = 'parent'`
+- `student_id` logically references `students.id`
 - Enables role-based access: parents get read-only access to linked students' data
 - Supports multiple guardians per student and parents monitoring multiple children
+- **No foreign key constraints**: Relationships validated at application level
 
 ### Parent Notes Table
 Allows parents to add notes about their child's applications.
@@ -132,9 +171,9 @@ Allows parents to add notes about their child's applications.
 ```sql
 CREATE TABLE parent_notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    parent_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    student_id UUID REFERENCES students(id) ON DELETE CASCADE,
-    application_id UUID REFERENCES applications(id) ON DELETE CASCADE,
+    parent_id UUID NOT NULL, -- Logical reference to users.id
+    student_id UUID NOT NULL, -- Logical reference to students.id
+    application_id UUID NOT NULL, -- Logical reference to applications.id
     note TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
@@ -179,6 +218,11 @@ CREATE INDEX idx_users_updated_at ON users(updated_at);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_parent_notes_created_at ON parent_notes(created_at);
 CREATE INDEX idx_parent_notes_updated_at ON parent_notes(updated_at);
+CREATE INDEX idx_university_requirements_university_id ON university_requirements(university_id);
+CREATE INDEX idx_university_requirements_requirement_type ON university_requirements(requirement_type);
+CREATE INDEX idx_university_requirements_is_required ON university_requirements(is_required);
+CREATE INDEX idx_university_requirements_created_at ON university_requirements(created_at);
+CREATE INDEX idx_university_requirements_updated_at ON university_requirements(updated_at);
 ```
 
 ## Business Rules
@@ -214,39 +258,55 @@ CREATE INDEX idx_parent_notes_updated_at ON parent_notes(updated_at);
 ┌─────────────────┐    ┌─────────────────┐
 │     users       │    │    students     │
 │  ┌──────────────┤    │  ┌──────────────┤
-│  │ id (PK)      │◄───┤│  │ id (PK)      │
-│  │ email        │    │  │ user_id (FK) │─┐
-│  │ role         │    │  │ gpa          │ │
-│  │ first_name   │    │  │ sat_score    │ │
-│  │ last_name    │    │  └──────────────┤ │
-│  └──────────────┤    └─────────────────┘ │
-└─────────────────┘                        │
+│  │ id (PK)      │ ┄┄┄┤│  │ id (PK)      │
+│  │ email        │    │  │ user_id      │─┐
+│  │ role         │    │  │ name         │ │
+│  │ first_name   │    │  │ email        │ │
+│  │ last_name    │    │  │ gpa          │ │
+│  └──────────────┤    │  └──────────────┤ │
+└─────────────────┘    └─────────────────┘ │
          ▲                                 │
-         │ (parent_id)                     │ (student_id)
-         │                                 ▼
+         ┄ (parent_id)                     │ (student_id)
+         ┄                                 ▼
 ┌─────────────────┐              ┌─────────────────┐
 │student_parent_  │              │  applications   │
 │relationships    │              │  ┌──────────────┤
 │  ┌──────────────┤              │  │ id (PK)      │
 │  │ id (PK)      │              │  │ student_id   │
-│  │ student_id   │──────────────┤  │ university_id│
-│  │ parent_id    │              │  │ status       │
-│  └──────────────┤              │  │ deadline     │
-└─────────────────┘              │  └──────────────┤
-                                 └─────────────────┘
-                                          │ (application_id)
-                                          ▼
-                                 ┌─────────────────┐
-                                 │application_     │
-                                 │requirements     │
-                                 │  ┌──────────────┤
-                                 │  │ id (PK)      │
-                                 │  │application_id│
-                                 │  │ type         │
-                                 │  │ status       │
-                                 │  └──────────────┤
-                                 └─────────────────┘
+│  │ student_id   │┄┄┄┄┄┄┄┄┄┄┄┄┄┤  │ university_id│─┐
+│  │ parent_id    │              │  │ status       │ │
+│  └──────────────┤              │  │ deadline     │ │
+└─────────────────┘              │  └──────────────┤ │
+                                 └─────────────────┘ │
+                                          ┄ (application_id) │ (university_id)
+                                          ▼                  ▼
+                                 ┌─────────────────┐ ┌─────────────────┐
+                                 │application_     │ │  universities   │
+                                 │requirements     │ │  ┌──────────────┤
+                                 │  ┌──────────────┤ │  │ id (PK)      │
+                                 │  │ id (PK)      │ │  │ name         │
+                                 │  │application_id│ │  │ country      │
+                                 │  │ type         │ │  │ ranking      │
+                                 │  │ status       │ │  └──────────────┤
+                                 │  └──────────────┤ └─────────────────┘
+                                 └─────────────────┘          ┄ (university_id)
+                                                              ▼
+                                                     ┌─────────────────┐
+                                                     │university_      │
+                                                     │requirements     │
+                                                     │  ┌──────────────┤
+                                                     │  │ id (PK)      │
+                                                     │  │university_id │
+                                                     │  │ type         │
+                                                     │  │ is_required  │
+                                                     │  └──────────────┤
+                                                     └─────────────────┘
+
+Legend: ┄┄┄ Logical references (no foreign keys)
+        ──── Direct connections
 ```
+
+**Note**: All table relationships are maintained through logical ID references rather than database foreign key constraints. This provides greater flexibility while relationships are enforced in the application layer.
 
 ## Security Considerations
 
@@ -260,11 +320,12 @@ CREATE INDEX idx_parent_notes_updated_at ON parent_notes(updated_at);
 - All passwords stored as bcrypt hashes
 - JWT tokens for session management
 - UUID primary keys to prevent enumeration attacks
-- Foreign key constraints to maintain data integrity
+- Application-level data integrity validation
+- No foreign key constraints for simplified data management
 
 ### Access Control Examples
 ```sql
--- Student accessing their own data
+-- Student accessing their own data (using logical joins)
 SELECT * FROM applications a 
 JOIN students s ON a.student_id = s.id 
 JOIN users u ON s.user_id = u.id 
@@ -275,4 +336,10 @@ SELECT * FROM applications a
 JOIN students s ON a.student_id = s.id 
 JOIN student_parent_relationships spr ON s.id = spr.student_id 
 WHERE spr.parent_id = :current_user_id;
+
+-- Application-level integrity checks
+-- Validate student exists before creating application
+SELECT COUNT(*) FROM students WHERE id = :student_id;
+-- Validate university exists before creating application
+SELECT COUNT(*) FROM universities WHERE id = :university_id;
 ```

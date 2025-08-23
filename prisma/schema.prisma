@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
+  id           String    @id @default(uuid())
   email        String    @unique
   passwordHash String    @map("password_hash")
   role         String    // 'student', 'parent', 'teacher', 'admin'
@@ -18,15 +18,11 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  student                        Student?
-  parentRelationships            StudentParentRelationship[] @relation("ParentUser")
-  parentNotes                    ParentNote[]
-
   @@map("users")
 }
 
 model Student {
-  id               String    @id @default(cuid())
+  id               String    @id @default(uuid())
   userId           String    @unique @map("user_id")
   name             String
   email            String    @unique
@@ -40,16 +36,11 @@ model Student {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
-  user                           User                          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  applications                   Application[]
-  parentRelationships            StudentParentRelationship[]   @relation("StudentRelation")
-  parentNotes                    ParentNote[]
-
   @@map("students")
 }
 
 model University {
-  id                String      @id @default(cuid())
+  id                String      @id @default(uuid())
   name              String
   country           String?
   state             String?
@@ -65,13 +56,24 @@ model University {
   createdAt         DateTime    @default(now()) @map("created_at")
   updatedAt         DateTime    @updatedAt @map("updated_at")
 
-  applications      Application[]
-
   @@map("universities")
 }
 
+model UniversityRequirement {
+  id                   String   @id @default(uuid())
+  universityId         String   @map("university_id")
+  requirementType      String   @map("requirement_type") // 'essay', 'recommendation', 'transcript', 'portfolio', 'interview'
+  isRequired           Boolean  @default(true) @map("is_required")
+  description          String?
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@unique([universityId, requirementType])
+  @@map("university_requirements")
+}
+
 model Application {
-  id               String    @id @default(cuid())
+  id               String    @id @default(uuid())
   studentId        String    @map("student_id")
   universityId     String    @map("university_id")
   applicationType  String    @map("application_type") // 'Early Decision', 'Early Action', 'Regular Decision', 'Rolling Admission'
@@ -84,55 +86,41 @@ model Application {
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
 
-  student          Student                   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  university       University               @relation(fields: [universityId], references: [id], onDelete: Cascade)
-  requirements     ApplicationRequirement[]
-  parentNotes      ParentNote[]
-
   @@unique([studentId, universityId, applicationType])
   @@map("applications")
 }
 
 model ApplicationRequirement {
-  id                String    @id @default(cuid())
+  id                String    @id @default(uuid())
   applicationId     String    @map("application_id")
-  requirementType   String    @map("requirement_type") // 'essay', 'recommendation', 'transcript', 'test_scores'
+  requirementType   String    @map("requirement_type") // 'essay', 'recommendation', 'transcript'
   status            String    @default("not_started") // 'not_started', 'in_progress', 'completed'
   deadline          DateTime?
   notes             String?
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
 
-  application       Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-
   @@map("application_requirements")
 }
 
 model StudentParentRelationship {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   studentId String   @map("student_id")
   parentId  String   @map("parent_id")
   createdAt DateTime @default(now()) @map("created_at")
-
-  student   Student @relation("StudentRelation", fields: [studentId], references: [id], onDelete: Cascade)
-  parent    User    @relation("ParentUser", fields: [parentId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, parentId])
   @@map("student_parent_relationships")
 }
 
 model ParentNote {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid())
   parentId      String   @map("parent_id")
   studentId     String   @map("student_id")
   applicationId String   @map("application_id")
   note          String
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-
-  parent        User        @relation(fields: [parentId], references: [id], onDelete: Cascade)
-  student       Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@map("parent_notes")
 }
