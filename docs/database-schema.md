@@ -5,14 +5,12 @@ This document outlines the PostgreSQL database schema for the University Applica
 ## Core Tables
 
 ### Students Table
-Stores student profiles with academic information.
+Stores student academic profiles and educational information. Each student record is linked to a user account for authentication and access control.
 
 ```sql
 CREATE TABLE students (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     graduation_year INTEGER,
     gpa DECIMAL(3,2),
     sat_score INTEGER,
@@ -23,6 +21,11 @@ CREATE TABLE students (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 ```
+
+**Key Changes:**
+- Removed `name`, `email`, `password_hash` - now inherited from linked `users` record
+- Added `user_id` foreign key to establish 1:1 relationship with users table
+- Student's personal information (name, email) comes from their user account
 
 ### Universities Table
 Contains university information and application details.
@@ -84,8 +87,8 @@ CREATE TABLE application_requirements (
 );
 ```
 
-### Users Table (for RBAC)
-Manages authentication and role-based access control.
+### Users Table (Authentication & RBAC)
+Central authentication table that manages user accounts and role-based access control. Each user account is assigned a specific role that determines their permissions and data access patterns.
 
 ```sql
 CREATE TABLE users (
@@ -100,8 +103,13 @@ CREATE TABLE users (
 );
 ```
 
+**Role Relationships:**
+- **Student Role**: Links to `students` table via `user_id` (1:1 relationship)
+- **Parent Role**: Links to students through `student_parent_relationships` table (M:N relationship)
+- **Teacher/Admin Roles**: Reserved for future implementation
+
 ### Student Parent Relationships Table
-Links parents to students for access control.
+Manages many-to-many relationships between parent users and students. This allows multiple parents to access the same student's application data, and parents to monitor multiple students.
 
 ```sql
 CREATE TABLE student_parent_relationships (
@@ -112,6 +120,11 @@ CREATE TABLE student_parent_relationships (
     UNIQUE(student_id, parent_id)
 );
 ```
+
+**Relationship Notes:**
+- `parent_id` references `users.id` where `users.role = 'parent'`
+- Enables role-based access: parents get read-only access to linked students' data
+- Supports multiple guardians per student and parents monitoring multiple children
 
 ### Parent Notes Table
 Allows parents to add notes about their child's applications.
@@ -132,6 +145,7 @@ CREATE TABLE parent_notes (
 
 ```sql
 -- Performance indexes
+CREATE INDEX idx_students_user_id ON students(user_id);
 CREATE INDEX idx_applications_student_id ON applications(student_id);
 CREATE INDEX idx_applications_deadline ON applications(deadline);
 CREATE INDEX idx_applications_status ON applications(status);
@@ -144,7 +158,9 @@ CREATE INDEX idx_universities_city ON universities(city);
 CREATE INDEX idx_universities_location_composite ON universities(country, state, city);
 CREATE INDEX idx_universities_available_majors ON universities USING GIN(available_majors);
 CREATE INDEX idx_student_parent_relationships_student_id ON student_parent_relationships(student_id);
+CREATE INDEX idx_student_parent_relationships_parent_id ON student_parent_relationships(parent_id);
 CREATE INDEX idx_parent_notes_student_id ON parent_notes(student_id);
+CREATE INDEX idx_parent_notes_parent_id ON parent_notes(parent_id);
 
 -- Time-based indexes for performance
 CREATE INDEX idx_students_created_at ON students(created_at);
@@ -160,11 +176,19 @@ CREATE INDEX idx_application_requirements_updated_at ON application_requirements
 CREATE INDEX idx_application_requirements_deadline ON application_requirements(deadline);
 CREATE INDEX idx_users_created_at ON users(created_at);
 CREATE INDEX idx_users_updated_at ON users(updated_at);
+CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_parent_notes_created_at ON parent_notes(created_at);
 CREATE INDEX idx_parent_notes_updated_at ON parent_notes(updated_at);
 ```
 
 ## Business Rules
+
+### User-Role Relationships
+- **One user account per person**: Each individual has exactly one login account
+- **Role-based data access**: User role determines which tables they can access
+- **Student-User linking**: Each student profile links to exactly one user account
+- **Parent-Student linking**: Parents can be linked to multiple students, students can have multiple parent links
+- **Unique constraints**: One application per (student, university, application_type) combination
 
 ### Application Status Workflow
 - `not_started` → `in_progress` → `submitted` → `under_review` → `decided`
@@ -184,6 +208,46 @@ CREATE INDEX idx_parent_notes_updated_at ON parent_notes(updated_at);
 - Acceptance Rate: 0.00 - 100.00 percentage
 - Deadlines must be future dates for new applications
 
+## Relationship Diagram
+
+```
+┌─────────────────┐    ┌─────────────────┐
+│     users       │    │    students     │
+│  ┌──────────────┤    │  ┌──────────────┤
+│  │ id (PK)      │◄───┤│  │ id (PK)      │
+│  │ email        │    │  │ user_id (FK) │─┐
+│  │ role         │    │  │ gpa          │ │
+│  │ first_name   │    │  │ sat_score    │ │
+│  │ last_name    │    │  └──────────────┤ │
+│  └──────────────┤    └─────────────────┘ │
+└─────────────────┘                        │
+         ▲                                 │
+         │ (parent_id)                     │ (student_id)
+         │                                 ▼
+┌─────────────────┐              ┌─────────────────┐
+│student_parent_  │              │  applications   │
+│relationships    │              │  ┌──────────────┤
+│  ┌──────────────┤              │  │ id (PK)      │
+│  │ id (PK)      │              │  │ student_id   │
+│  │ student_id   │──────────────┤  │ university_id│
+│  │ parent_id    │              │  │ status       │
+│  └──────────────┤              │  │ deadline     │
+└─────────────────┘              │  └──────────────┤
+                                 └─────────────────┘
+                                          │ (application_id)
+                                          ▼
+                                 ┌─────────────────┐
+                                 │application_     │
+                                 │requirements     │
+                                 │  ┌──────────────┤
+                                 │  │ id (PK)      │
+                                 │  │application_id│
+                                 │  │ type         │
+                                 │  │ status       │
+                                 │  └──────────────┤
+                                 └─────────────────┘
+```
+
 ## Security Considerations
 
 ### Role-Based Access
@@ -197,3 +261,18 @@ CREATE INDEX idx_parent_notes_updated_at ON parent_notes(updated_at);
 - JWT tokens for session management
 - UUID primary keys to prevent enumeration attacks
 - Foreign key constraints to maintain data integrity
+
+### Access Control Examples
+```sql
+-- Student accessing their own data
+SELECT * FROM applications a 
+JOIN students s ON a.student_id = s.id 
+JOIN users u ON s.user_id = u.id 
+WHERE u.id = :current_user_id AND u.role = 'student';
+
+-- Parent accessing linked student's data
+SELECT * FROM applications a 
+JOIN students s ON a.student_id = s.id 
+JOIN student_parent_relationships spr ON s.id = spr.student_id 
+WHERE spr.parent_id = :current_user_id;
+```
