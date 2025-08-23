@@ -1,12 +1,11 @@
-import bcrypt from 'bcryptjs'
+import crypto from 'crypto'
 
-export async function hashPassword(password: string): Promise<string> {
-  const saltRounds = 12
-  return bcrypt.hash(password, saltRounds)
+export function hashPasswordMD5(password: string): string {
+  return crypto.createHash('md5').update(password).digest('hex')
 }
 
-export async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-  return bcrypt.compare(password, hashedPassword)
+export function verifyPasswordMD5(password: string, hashedPassword: string): boolean {
+  return password === hashedPassword
 }
 
 export function generateRequestId(): string {

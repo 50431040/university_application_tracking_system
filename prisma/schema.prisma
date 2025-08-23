@@ -51,7 +51,7 @@ model University {
   tuitionInState    Decimal?    @db.Decimal(10,2) @map("tuition_in_state")
   tuitionOutState   Decimal?    @db.Decimal(10,2) @map("tuition_out_state")
   applicationFee    Decimal?    @db.Decimal(6,2) @map("application_fee")
-  deadlines         Json?       // {early_decision: 'date', regular: 'date'}
+  deadlines         Json?       // {early_decision: 'date', regular: 'date', early_action: 'date', regular_decision: 'date', rolling_admission: 'date'}
   availableMajors   String[]    @map("available_majors")
   createdAt         DateTime    @default(now()) @map("created_at")
   updatedAt         DateTime    @updatedAt @map("updated_at")

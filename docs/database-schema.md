@@ -63,7 +63,7 @@ CREATE TABLE universities (
     tuition_in_state DECIMAL(10,2),
     tuition_out_state DECIMAL(10,2),
     application_fee DECIMAL(6,2),
-    deadlines JSONB, -- {early_decision: 'date', regular: 'date'}
+    deadlines JSONB, -- {early_decision: 'date', early_action: 'date', regular_decision: 'date', rolling_admission: 'date'}
     available_majors TEXT[], -- Array of available majors
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()

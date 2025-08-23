@@ -24,8 +24,8 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      // Hash password before sending
-      const hashedPassword = CryptoJS.SHA256(password + email).toString()
+      // MD5 hash password before sending
+      const hashedPassword = CryptoJS.MD5(password).toString()
       await login(email, hashedPassword)
       router.push('/dashboard')
     } catch (err) {

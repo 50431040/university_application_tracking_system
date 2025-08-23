@@ -4,8 +4,8 @@ import { validateRequest, loginSchema } from '../../_lib/validators'
 import { createSuccessResponse } from '../../_lib/types/response'
 import { AuthenticationError } from '../../_lib/types/errors'
 import { prisma } from '../../_lib/utils/prisma'
+import { verifyPasswordMD5 } from '../../_lib/utils/auth'
 import { encode } from 'next-auth/jwt'
-import crypto from 'crypto'
 
 async function loginHandler(req: NextRequest): Promise<NextResponse> {
   const body = await req.json()
@@ -15,15 +15,7 @@ async function loginHandler(req: NextRequest): Promise<NextResponse> {
     where: { email }
   })
 
-  if (!user) {
-    throw new AuthenticationError('Invalid email or password')
-  }
-
-  // Compare hashed password (client sends SHA256(password + email))
-  const expectedHash = crypto.createHash('sha256').update(user.passwordHash + user.email).digest('hex')
-  const receivedHash = password
-
-  if (expectedHash !== receivedHash) {
+  if (!user || !verifyPasswordMD5(password, user.passwordHash)) {
     throw new AuthenticationError('Invalid email or password')
   }
 
