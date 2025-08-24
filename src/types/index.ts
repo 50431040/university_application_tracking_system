@@ -78,6 +78,37 @@ export interface DashboardStats {
   waitlisted: number
 }
 
+export interface UpcomingDeadline {
+  id: string
+  universityName: string
+  applicationType: string
+  deadline: string
+  daysUntilDeadline: number
+  status: string
+}
+
+export interface RecentApplication {
+  id: string
+  universityName: string
+  applicationType: string
+  status: string
+  deadline: string
+  submittedDate?: string
+}
+
+export interface ProgressOverview {
+  totalRequirements: number
+  completedRequirements: number
+  progressPercentage: number
+}
+
+export interface DashboardData {
+  stats: DashboardStats
+  upcomingDeadlines: UpcomingDeadline[]
+  recentApplications: RecentApplication[]
+  progressOverview: ProgressOverview
+}
+
 export interface LoadingState<T> {
   data: T | null
   isLoading: boolean
