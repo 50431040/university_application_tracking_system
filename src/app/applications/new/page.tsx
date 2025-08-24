@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -33,7 +33,7 @@ const APPLICATION_TYPES = [
   { value: 'Rolling Admission', label: 'Rolling Admission' }
 ]
 
-export default function NewApplicationPage() {
+function NewApplicationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preSelectedUniversityId = searchParams.get('universityId')
@@ -338,5 +338,13 @@ export default function NewApplicationPage() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default function NewApplicationPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div>Loading...</div></div>}>
+      <NewApplicationForm />
+    </Suspense>
   )
 }

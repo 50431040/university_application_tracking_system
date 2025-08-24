@@ -1,9 +1,18 @@
+import {
+  ApplicationStatus,
+  ApplicationType,
+  DecisionType,
+  RequirementStatus,
+  RequirementType,
+  UserRole
+} from '@/constants/enums'
+
 export interface User {
   id: string
   email: string
   firstName: string
   lastName: string
-  role: 'student' | 'parent' | 'teacher' | 'admin'
+  role: UserRole
 }
 
 export interface Student {
@@ -38,22 +47,25 @@ export interface Application {
   studentId: string
   universityId: string
   university?: University
-  applicationType: 'Early Decision' | 'Early Action' | 'Regular Decision' | 'Rolling Admission'
+  applicationType: ApplicationType
   deadline: string
-  status: 'not_started' | 'in_progress' | 'submitted' | 'under_review' | 'decided'
+  status: ApplicationStatus
   submittedDate?: string
   decisionDate?: string
-  decisionType?: 'accepted' | 'rejected' | 'waitlisted'
+  decisionType?: DecisionType
   notes?: string
+  requirements?: ApplicationRequirement[]
 }
 
 export interface ApplicationRequirement {
   id: string
   applicationId: string
-  type: string
-  description: string
-  status: 'not_started' | 'in_progress' | 'completed'
-  dueDate?: string
+  requirementType: RequirementType
+  status: RequirementStatus
+  deadline?: string
+  notes?: string
+  createdAt: string
+  updatedAt: string
 }
 
 export interface DashboardStats {
@@ -82,8 +94,8 @@ export interface ApiResponse<T> {
 }
 
 export interface FilterOptions {
-  status?: string[]
-  applicationType?: string[]
+  status?: ApplicationStatus | 'all'
+  applicationType?: ApplicationType | 'all'
   deadlineRange?: 'all' | 'this_week' | 'this_month' | 'overdue'
-  decisionType?: string[]
+  decisionType?: DecisionType | 'all'
 }

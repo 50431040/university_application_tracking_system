@@ -5,6 +5,7 @@ import { validateRequest, createApplicationSchema } from '../_lib/validators'
 import { createSuccessResponse } from '../_lib/types/response'
 import { prisma } from '../_lib/utils/prisma'
 import { AuthenticationError, ValidationError } from '../_lib/types/errors'
+import { APPLICATION_STATUS } from '@/constants/enums'
 
 async function createApplicationHandler(req: NextRequest): Promise<NextResponse> {
   // Get authenticated user
@@ -74,7 +75,7 @@ async function createApplicationHandler(req: NextRequest): Promise<NextResponse>
       universityId: applicationData.universityId,
       applicationType: applicationData.applicationType,
       deadline: deadline,
-      status: 'not_started',
+      status: APPLICATION_STATUS.NOT_STARTED,
       notes: applicationData.notes || null
     }
   })

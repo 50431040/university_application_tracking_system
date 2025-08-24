@@ -1,4 +1,13 @@
 import { z } from 'zod'
+import { 
+  APPLICATION_STATUS_VALUES, 
+  APPLICATION_TYPE_VALUES, 
+  DECISION_TYPE_VALUES, 
+  REQUIREMENT_STATUS_VALUES,
+  REQUIREMENT_TYPE_VALUES,
+  USER_ROLE_VALUES,
+  APPLICATION_SYSTEM_VALUES
+} from '@/constants/enums'
 import { ValidationError } from '../types/errors'
 
 // Common validation schemas
@@ -20,7 +29,7 @@ export const registerSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  role: z.enum(['student', 'parent'])
+  role: z.enum(USER_ROLE_VALUES.filter(role => role !== 'teacher') as [string, ...string[]])
 })
 
 // Student profile schemas
@@ -36,15 +45,15 @@ export const studentProfileSchema = z.object({
 // Application schemas
 export const createApplicationSchema = z.object({
   universityId: z.string().uuid(),
-  applicationType: z.enum(['Early Decision', 'Early Action', 'Regular Decision', 'Rolling Admission']),
+  applicationType: z.enum(APPLICATION_TYPE_VALUES),
   notes: z.string().optional()
 })
 
 export const updateApplicationSchema = z.object({
-  status: z.enum(['not_started', 'in_progress', 'submitted', 'under_review', 'decided']).optional(),
+  status: z.enum(APPLICATION_STATUS_VALUES).optional(),
   submittedDate: z.string().datetime().optional(),
   decisionDate: z.string().datetime().optional(),
-  decisionType: z.enum(['accepted', 'rejected', 'waitlisted']).optional(),
+  decisionType: z.enum(DECISION_TYPE_VALUES).optional(),
   notes: z.string().optional()
 })
 
@@ -53,7 +62,7 @@ export const universitySearchSchema = z.object({
   query: z.string().optional(),
   country: z.string().optional(),
   state: z.string().optional(),
-  applicationSystem: z.enum(['Common App', 'Coalition', 'Direct']).optional(),
+  applicationSystem: z.enum(APPLICATION_SYSTEM_VALUES).optional(),
   minRanking: z.coerce.number().int().min(1).optional(),
   maxRanking: z.coerce.number().int().min(1).optional(),
   minAcceptanceRate: z.coerce.number().min(0).max(100).optional(),
