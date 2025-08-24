@@ -134,32 +134,10 @@ async function applicationsHandler(req: NextRequest): Promise<NextResponse> {
         orderBy = { deadline: 'asc' }
     }
 
-    // Execute query with pagination and include requirements in a single query
+    // Execute query with pagination
     const [applications, total] = await Promise.all([
       prisma.application.findMany({
         where,
-        include: {
-          university: {
-            select: {
-              id: true,
-              name: true,
-              country: true,
-              state: true,
-              city: true,
-              usNewsRanking: true,
-              acceptanceRate: true,
-              applicationFee: true
-            }
-          },
-          requirements: {
-            select: {
-              id: true,
-              requirementType: true,
-              status: true
-            },
-            orderBy: { requirementType: 'asc' }
-          }
-        },
         orderBy,
         skip: (page - 1) * limit,
         take: limit
@@ -167,8 +145,59 @@ async function applicationsHandler(req: NextRequest): Promise<NextResponse> {
       prisma.application.count({ where })
     ])
 
-    // Applications already include requirements from the single query above
-    const applicationsWithRequirements = applications
+    // Batch query university and requirements data to avoid N+1 problem
+    const universityIds = [...new Set(applications.map(app => app.universityId))]
+    const applicationIds = applications.map(app => app.id)
+
+    const [universities, allRequirements] = await Promise.all([
+      // Batch query universities
+      prisma.university.findMany({
+        where: { id: { in: universityIds } },
+        select: {
+          id: true,
+          name: true,
+          country: true,
+          state: true,
+          city: true,
+          usNewsRanking: true,
+          acceptanceRate: true,
+          applicationFee: true
+        }
+      }),
+      // Batch query requirements
+      prisma.applicationRequirement.findMany({
+        where: { applicationId: { in: applicationIds } },
+        select: {
+          id: true,
+          applicationId: true,
+          requirementType: true,
+          status: true
+        },
+        orderBy: { requirementType: 'asc' }
+      })
+    ])
+
+    // Create lookup maps for efficient data joining
+    const universityMap = new Map(universities.map(uni => [uni.id, uni]))
+    const requirementsMap = new Map<string, any[]>()
+    
+    // Group requirements by applicationId
+    allRequirements.forEach(req => {
+      if (!requirementsMap.has(req.applicationId)) {
+        requirementsMap.set(req.applicationId, [])
+      }
+      requirementsMap.get(req.applicationId)!.push(req)
+    })
+
+    // Combine data efficiently
+    const applicationsWithRelatedData = applications.map(app => ({
+      ...app,
+      university: universityMap.get(app.universityId) || null,
+      requirements: requirementsMap.get(app.id) || []
+    }))
+
+    // Applications now have university and requirements data
+    const applicationsWithRequirements = applicationsWithRelatedData
 
     // Apply search filter in memory (since we need to search university names)
     let filteredApplications = applicationsWithRequirements

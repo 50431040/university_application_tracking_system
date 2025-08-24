@@ -32,26 +32,7 @@ async function applicationHandler(req: NextRequest, { params }: RouteParams): Pr
   // GET: Get application details
   if (req.method === 'GET') {
     const application = await prisma.application.findUnique({
-      where: { id: applicationId },
-      include: {
-        university: {
-          select: {
-            id: true,
-            name: true,
-            country: true,
-            state: true,
-            city: true,
-            usNewsRanking: true,
-            acceptanceRate: true,
-            applicationSystem: true,
-            tuitionInState: true,
-            tuitionOutState: true,
-            applicationFee: true,
-            deadlines: true,
-            availableMajors: true
-          }
-        }
-      }
+      where: { id: applicationId }
     })
 
     if (!application) {
@@ -62,6 +43,26 @@ async function applicationHandler(req: NextRequest, { params }: RouteParams): Pr
     if (user.role === 'student' && application.studentId !== student?.id) {
       throw new AuthorizationError('Cannot access this application')
     }
+
+    // Separately query university data
+    const university = await prisma.university.findUnique({
+      where: { id: application.universityId },
+      select: {
+        id: true,
+        name: true,
+        country: true,
+        state: true,
+        city: true,
+        usNewsRanking: true,
+        acceptanceRate: true,
+        applicationSystem: true,
+        tuitionInState: true,
+        tuitionOutState: true,
+        applicationFee: true,
+        deadlines: true,
+        availableMajors: true
+      }
+    })
 
     // Get application requirements
     let requirements = await prisma.applicationRequirement.findMany({
@@ -114,6 +115,7 @@ async function applicationHandler(req: NextRequest, { params }: RouteParams): Pr
 
     const result = {
       ...application,
+      university,
       requirements,
       parentNotes
     }
@@ -154,24 +156,30 @@ async function applicationHandler(req: NextRequest, { params }: RouteParams): Pr
 
     const updatedApplication = await prisma.application.update({
       where: { id: applicationId },
-      data: updatePayload,
-      include: {
-        university: {
-          select: {
-            id: true,
-            name: true,
-            country: true,
-            state: true,
-            city: true,
-            usNewsRanking: true,
-            acceptanceRate: true,
-            applicationFee: true
-          }
-        }
+      data: updatePayload
+    })
+
+    // Separately query university data
+    const university = await prisma.university.findUnique({
+      where: { id: updatedApplication.universityId },
+      select: {
+        id: true,
+        name: true,
+        country: true,
+        state: true,
+        city: true,
+        usNewsRanking: true,
+        acceptanceRate: true,
+        applicationFee: true
       }
     })
 
-    return NextResponse.json(createSuccessResponse(updatedApplication))
+    const result = {
+      ...updatedApplication,
+      university
+    }
+
+    return NextResponse.json(createSuccessResponse(result))
   }
 
   // DELETE: Delete application
@@ -251,30 +259,36 @@ async function submitApplicationHandler(req: NextRequest, { params }: RouteParam
     throw new AuthorizationError('Cannot submit this application')
   }
 
-  // Update application status to submitted
+    // Update application status to submitted
   const updatedApplication = await prisma.application.update({
     where: { id: applicationId },
     data: {
-              status: APPLICATION_STATUS.SUBMITTED,
+      status: APPLICATION_STATUS.SUBMITTED,
       submittedDate: new Date()
-    },
-    include: {
-      university: {
-        select: {
-          id: true,
-          name: true,
-          country: true,
-          state: true,
-          city: true,
-          usNewsRanking: true,
-          acceptanceRate: true,
-          applicationFee: true
-        }
-      }
     }
   })
 
-  return NextResponse.json(createSuccessResponse(updatedApplication))
+  // Separately query university data
+  const university = await prisma.university.findUnique({
+    where: { id: updatedApplication.universityId },
+    select: {
+      id: true,
+      name: true,
+      country: true,
+      state: true,
+      city: true,
+      usNewsRanking: true,
+      acceptanceRate: true,
+      applicationFee: true
+    }
+  })
+
+  const result = {
+    ...updatedApplication,
+    university
+  }
+
+  return NextResponse.json(createSuccessResponse(result))
 }
 
 export const GET = withErrorHandler(applicationHandler)
