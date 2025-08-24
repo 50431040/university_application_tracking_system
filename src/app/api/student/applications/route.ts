@@ -134,7 +134,7 @@ async function applicationsHandler(req: NextRequest): Promise<NextResponse> {
         orderBy = { deadline: 'asc' }
     }
 
-    // Execute query with pagination
+    // Execute query with pagination and include requirements in a single query
     const [applications, total] = await Promise.all([
       prisma.application.findMany({
         where,
@@ -150,6 +150,14 @@ async function applicationsHandler(req: NextRequest): Promise<NextResponse> {
               acceptanceRate: true,
               applicationFee: true
             }
+          },
+          requirements: {
+            select: {
+              id: true,
+              requirementType: true,
+              status: true
+            },
+            orderBy: { requirementType: 'asc' }
           }
         },
         orderBy,
@@ -159,25 +167,8 @@ async function applicationsHandler(req: NextRequest): Promise<NextResponse> {
       prisma.application.count({ where })
     ])
 
-    // Get requirements for each application
-    const applicationsWithRequirements = await Promise.all(
-      applications.map(async (application) => {
-        const requirements = await prisma.applicationRequirement.findMany({
-          where: { applicationId: application.id },
-          select: {
-            id: true,
-            requirementType: true,
-            status: true
-          },
-          orderBy: { requirementType: 'asc' }
-        })
-        
-        return {
-          ...application,
-          requirements
-        }
-      })
-    )
+    // Applications already include requirements from the single query above
+    const applicationsWithRequirements = applications
 
     // Apply search filter in memory (since we need to search university names)
     let filteredApplications = applicationsWithRequirements
