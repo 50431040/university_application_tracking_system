@@ -20,7 +20,7 @@ This application addresses the complex needs of students applying to 8-15 univer
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 20
 - PostgreSQL 13+ (or Supabase account)
 - npm or yarn package manager
 
@@ -39,17 +39,17 @@ This application addresses the complex needs of students applying to 8-15 univer
 
 3. **Set up environment variables**
    ```bash
-   cp .env.example .env.local
+   cp .env.example .env
    ```
-   Edit `.env.local` with your database and authentication configuration.
+   Edit `.env` with your database and authentication configuration.
 
 4. **Set up the database**
    ```bash
    # If using local PostgreSQL
    createdb university_tracker
    
-   # Run migrations (implement with your preferred tool)
-   npm run db:migrate
+   # create tables (implement with your preferred tool)
+   Create tables (refer to docs/database-schema.md file)
    ```
 
 5. **Seed demo data**
@@ -71,13 +71,12 @@ The application includes comprehensive demo data for testing:
 ### Test Accounts
 - **Student**: `student@demo.com` / `password123`
   - Profile: Sarah Johnson, Class of 2024, 3.8 GPA, 1450 SAT
-  - 12 university applications across different types and statuses
 
 - **Parent**: `parent@demo.com` / `password123`
   - Linked to Sarah Johnson with read-only access and note-taking capabilities
 
 ### Sample Universities
-- 50+ universities with realistic data including rankings, acceptance rates, tuition
+- 40+ universities with realistic data including rankings, acceptance rates, tuition
 - Mix of public/private, different states and application systems
 - Various deadline types (EA, ED, RD, Rolling)
 
@@ -89,7 +88,7 @@ The application includes comprehensive demo data for testing:
 ## 🏗️ Architecture
 
 ### Tech Stack
-- **Frontend**: Next.js 14 with TypeScript, Tailwind CSS
+- **Frontend**: Next.js 15 with TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL with Prisma ORM (or direct SQL)
 - **Authentication**: NextAuth.js with JWT tokens
@@ -111,7 +110,6 @@ The application includes comprehensive demo data for testing:
 ├── student/           # Student-specific operations
 ├── parent/            # Parent-specific operations
 ├── universities/      # University search and data
-└── admin/             # Administrative functions
 ```
 
 #### User Interfaces
@@ -134,21 +132,17 @@ The application includes comprehensive demo data for testing:
 1. **Account Setup**: Link to student account
 2. **Monitoring**: View child's application portfolio
 3. **Communication**: Add notes and observations
-4. **Financial Planning**: Review tuition costs and estimates
 
 ## 🔒 Security & Permissions
 
 ### Role-Based Access Control
 - **Students**: Full CRUD access to their own applications and profile
 - **Parents**: Read-only access to linked students + note creation
-- **Teachers**: (Future) Guidance counselor access to assigned students
-- **Admins**: (Future) System administration capabilities
 
 ### Security Features
 - JWT-based authentication with secure session management
 - Row-level security policies in database
 - Input validation and SQL injection protection
-- HTTPS enforcement and secure environment variables
 
 ## 🎯 Technical Implementation
 
@@ -163,15 +157,14 @@ not_started → in_progress → submitted → under_review → decided
 ```
 
 #### Application Types
-- **Early Decision**: Binding, single choice, November deadlines
-- **Early Action**: Non-binding, November deadlines
-- **Regular Decision**: Standard timeline, January deadlines
+- **Early Decision**: Binding, single choice
+- **Early Action**: Non-binding
+- **Regular Decision**: Standard timeline
 - **Rolling Admission**: Continuous review process
 
 #### Deadline Management
 - Visual alerts for approaching deadlines
 - Automatic status updates based on dates
-- Calendar integration and reminder system
 
 ### Performance Optimizations
 - Database indexing on frequently queried columns
@@ -198,7 +191,7 @@ not_started → in_progress → submitted → under_review → decided
 ## 🚢 Deployment
 
 ### Live Demo
-**Production URL**: [https://your-app.vercel.app](https://your-app.vercel.app)
+**Production URL**: [https://university-application-tracking-sys-ochre.vercel.app](https://university-application-tracking-sys-ochre.vercel.app/)
 
 **Test Credentials**:
 - Student: `student@demo.com` / `password123`
@@ -207,8 +200,6 @@ not_started → in_progress → submitted → under_review → decided
 ### Deployment Stack
 - **Hosting**: Vercel (automatic deployments from main branch)
 - **Database**: Supabase PostgreSQL
-- **CDN**: Vercel Edge Network
-- **Monitoring**: Vercel Analytics + Sentry error tracking
 
 For detailed deployment instructions, see [docs/deployment-guide.md](docs/deployment-guide.md).
 
@@ -235,36 +226,14 @@ npm run seed         # Seed database with demo data
 - TypeScript for type safety
 - ESLint + Prettier for code formatting
 - Husky for pre-commit hooks
-- Jest for unit testing
-- Playwright for e2e testing
-
-## 🎓 Educational Focus
-
-This project demonstrates understanding of:
-
-### Business Domain Knowledge
-- Educational workflows and college admissions process
-- Complex multi-stakeholder requirements
-- Deadline-driven process management
-
-### Technical Architecture
-- Scalable database design with proper relationships
-- RESTful API design with role-based permissions
-- Modern React patterns with TypeScript
-- Responsive and accessible UI design
-
-### System Design
-- Role-based access control implementation
-- Data modeling for complex business rules
-- Performance optimization strategies
-- Security best practices
 
 ## 🔮 Future Enhancements
 
 ### Immediate Improvements
 - [ ] Document upload system for essays and transcripts
 - [ ] Email notifications for upcoming deadlines
-- [ ] Advanced application analytics and insights
+- [ ] AI analysis and improvement suggestions for uploaded documents
+- [ ] Provide university recommendations and application advice using AI based on student information
 - [ ] Mobile app with push notifications
 
 ### Extended Features
@@ -283,24 +252,4 @@ This project demonstrates understanding of:
 ## ⚠️ Known Issues
 
 - University data is static and needs regular updates from external sources
-- Email notification system requires SMTP configuration
 - File upload functionality needs implementation for document management
-- Mobile app equivalent would enhance user experience
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- University data sourced from public datasets and APIs
-- Design inspiration from modern educational platforms
-- Built with the incredible Next.js and React ecosystem
