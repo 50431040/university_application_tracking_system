@@ -238,7 +238,6 @@ DIRECT_URL="postgresql://..."
 # 认证
 NEXTAUTH_SECRET="..."
 NEXTAUTH_URL="..."
-JWT_SECRET="..."
 
 # 可选: Supabase
 NEXT_PUBLIC_SUPABASE_URL="..."

@@ -26,7 +26,6 @@ model Student {
   userId           String    @unique @map("user_id")
   name             String
   email            String    @unique
-  passwordHash     String    @map("password_hash")
   graduationYear   Int?      @map("graduation_year")
   gpa              Decimal?  @db.Decimal(3,2)
   satScore         Int?      @map("sat_score")

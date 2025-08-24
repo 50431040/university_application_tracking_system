@@ -30,7 +30,6 @@ CREATE TABLE students (
     user_id UUID UNIQUE NOT NULL, -- Logical reference to users.id (no foreign key)
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
     graduation_year INTEGER,
     gpa DECIMAL(3,2),
     sat_score INTEGER,
@@ -188,18 +187,34 @@ CREATE INDEX idx_students_user_id ON students(user_id);
 CREATE INDEX idx_applications_student_id ON applications(student_id);
 CREATE INDEX idx_applications_deadline ON applications(deadline);
 CREATE INDEX idx_applications_status ON applications(status);
+CREATE INDEX idx_applications_university_id ON applications(university_id);
+CREATE INDEX idx_applications_application_type ON applications(application_type);
 CREATE INDEX idx_application_requirements_application_id ON application_requirements(application_id);
+CREATE INDEX idx_application_requirements_requirement_type ON application_requirements(requirement_type);
+CREATE INDEX idx_application_requirements_status ON application_requirements(status);
 CREATE INDEX idx_universities_ranking ON universities(us_news_ranking);
+CREATE INDEX idx_universities_name ON universities(name);
+CREATE INDEX idx_universities_application_system ON universities(application_system);
+CREATE INDEX idx_universities_tuition_in_state ON universities(tuition_in_state);
+CREATE INDEX idx_universities_tuition_out_state ON universities(tuition_out_state);
+CREATE INDEX idx_universities_application_fee ON universities(application_fee);
 CREATE INDEX idx_universities_acceptance_rate ON universities(acceptance_rate);
 CREATE INDEX idx_universities_country ON universities(country);
 CREATE INDEX idx_universities_state ON universities(state);
 CREATE INDEX idx_universities_city ON universities(city);
 CREATE INDEX idx_universities_location_composite ON universities(country, state, city);
 CREATE INDEX idx_universities_available_majors ON universities USING GIN(available_majors);
+
 CREATE INDEX idx_student_parent_relationships_student_id ON student_parent_relationships(student_id);
 CREATE INDEX idx_student_parent_relationships_parent_id ON student_parent_relationships(parent_id);
 CREATE INDEX idx_parent_notes_student_id ON parent_notes(student_id);
 CREATE INDEX idx_parent_notes_parent_id ON parent_notes(parent_id);
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_first_name ON users(first_name);
+CREATE INDEX idx_users_last_name ON users(last_name);
+
+CREATE INDEX idx_university_requirements_university_id ON university_requirements(university_id);
+CREATE INDEX idx_university_requirements_requirement_type ON university_requirements(requirement_type);
 
 -- Time-based indexes for performance
 CREATE INDEX idx_students_created_at ON students(created_at);
@@ -218,9 +233,6 @@ CREATE INDEX idx_users_updated_at ON users(updated_at);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_parent_notes_created_at ON parent_notes(created_at);
 CREATE INDEX idx_parent_notes_updated_at ON parent_notes(updated_at);
-CREATE INDEX idx_university_requirements_university_id ON university_requirements(university_id);
-CREATE INDEX idx_university_requirements_requirement_type ON university_requirements(requirement_type);
-CREATE INDEX idx_university_requirements_is_required ON university_requirements(is_required);
 CREATE INDEX idx_university_requirements_created_at ON university_requirements(created_at);
 CREATE INDEX idx_university_requirements_updated_at ON university_requirements(updated_at);
 ```

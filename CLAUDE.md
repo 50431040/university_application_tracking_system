@@ -227,7 +227,6 @@ DIRECT_URL="postgresql://username:password@localhost:5432/university_tracker"
 # Authentication
 NEXTAUTH_SECRET="your-super-secret-nextauth-key-here-minimum-32-characters"  
 NEXTAUTH_URL="http://localhost:3000"
-JWT_SECRET="your-jwt-secret-key-for-token-signing"
 
 # Optional: Supabase Integration
 NEXT_PUBLIC_SUPABASE_URL="https://your-project-ref.supabase.co"

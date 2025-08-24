@@ -37,7 +37,6 @@ async function main() {
       userId: studentUser.id,
       name: 'Sarah Johnson',
       email: 'student@demo.com',
-      passwordHash: hashPasswordMD5('password123'),
       graduationYear: 2025,
       gpa: 3.85,
       satScore: 1450,
@@ -71,8 +70,8 @@ async function main() {
       tuitionOutState: 59076,
       applicationFee: 85,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-12-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'Biology', 'Psychology', 'Mathematics']
     },
@@ -88,8 +87,8 @@ async function main() {
       tuitionOutState: 61731,
       applicationFee: 90,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-02T00:00:00Z'
+        'early_action': '2025-09-15T00:00:00Z',
+        'regular_decision': '2025-12-15T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Medicine', 'Law']
     },
@@ -105,8 +104,8 @@ async function main() {
       tuitionOutState: 59750,
       applicationFee: 85,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_action': '2025-09-30T00:00:00Z',
+        'regular_decision': '2025-12-31T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Mathematics', 'Physics', 'Economics']
     },
@@ -122,8 +121,8 @@ async function main() {
       tuitionOutState: 59710,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'Politics', 'Engineering', 'Mathematics']
     },
@@ -139,8 +138,8 @@ async function main() {
       tuitionOutState: 64700,
       applicationFee: 80,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-02T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'History', 'Political Science', 'Biology']
     },
@@ -156,8 +155,8 @@ async function main() {
       tuitionOutState: 64965,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-02T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Economics', 'Computer Science', 'Mathematics', 'Physics', 'Biology']
     },
@@ -173,8 +172,8 @@ async function main() {
       tuitionOutState: 63452,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-05T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Business', 'Computer Science', 'Engineering', 'Economics', 'Biology']
     },
@@ -190,8 +189,8 @@ async function main() {
       tuitionOutState: 63255,
       applicationFee: 85,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-03T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Engineering', 'Computer Science', 'Physics', 'Mathematics', 'Chemistry']
     },
@@ -207,8 +206,8 @@ async function main() {
       tuitionOutState: 63054,
       applicationFee: 85,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-02T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'Biology', 'Psychology', 'Engineering']
     },
@@ -224,8 +223,8 @@ async function main() {
       tuitionOutState: 63340,
       applicationFee: 70,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-03T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Biology', 'Medicine', 'Engineering', 'Public Health']
     },
@@ -241,8 +240,8 @@ async function main() {
       tuitionOutState: 64887,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-02T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Journalism', 'Business', 'Economics']
     },
@@ -258,8 +257,8 @@ async function main() {
       tuitionOutState: 63684,
       applicationFee: 80,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-02T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'Government', 'Psychology', 'Engineering']
     },
@@ -275,8 +274,8 @@ async function main() {
       tuitionOutState: 65656,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-03T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'Biology', 'International Relations', 'Engineering']
     },
@@ -292,8 +291,8 @@ async function main() {
       tuitionOutState: 63946,
       applicationFee: 50,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'Engineering', 'Medicine', 'Business']
     },
@@ -309,8 +308,8 @@ async function main() {
       tuitionOutState: 58128,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Architecture', 'Music']
     },
@@ -326,8 +325,8 @@ async function main() {
       tuitionOutState: 63373,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-15T00:00:00Z',
-        'regular_decision': '2025-01-05T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Medicine', 'Architecture']
     },
@@ -343,8 +342,8 @@ async function main() {
       tuitionOutState: 65204,
       applicationFee: 80,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-02T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Agriculture', 'Business', 'Architecture']
     },
@@ -360,8 +359,8 @@ async function main() {
       tuitionOutState: 62693,
       applicationFee: 75,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Engineering', 'Liberal Arts', 'Architecture']
     },
@@ -377,7 +376,7 @@ async function main() {
       tuitionOutState: 46326,
       applicationFee: 80,
       deadlines: {
-        'regular_decision': '2024-11-30T00:00:00Z'
+        'regular_decision': '2025-09-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Film', 'Medicine']
     },
@@ -393,8 +392,8 @@ async function main() {
       tuitionOutState: 59920,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Medicine', 'Psychology', 'Biology']
     },
@@ -410,7 +409,7 @@ async function main() {
       tuitionOutState: 47348,
       applicationFee: 80,
       deadlines: {
-        'regular_decision': '2024-11-30T00:00:00Z'
+        'regular_decision': '2025-09-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Economics', 'Biology']
     },
@@ -426,8 +425,8 @@ async function main() {
       tuitionOutState: 63238,
       applicationFee: 75,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-10T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['International Relations', 'Business', 'Government', 'Economics', 'Computer Science']
     },
@@ -443,8 +442,8 @@ async function main() {
       tuitionOutState: 56941,
       applicationFee: 75,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-02-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Medicine', 'Law']
     },
@@ -460,8 +459,8 @@ async function main() {
       tuitionOutState: 58950,
       applicationFee: 70,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Economics', 'Engineering', 'Business', 'Medicine']
     },
@@ -477,8 +476,8 @@ async function main() {
       tuitionOutState: 63829,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Fine Arts', 'Drama']
     },
@@ -494,8 +493,8 @@ async function main() {
       tuitionOutState: 39338,
       applicationFee: 85,
       deadlines: {
-        'early_action': '2024-10-15T00:00:00Z',
-        'regular_decision': '2025-01-15T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Journalism', 'Medicine', 'Public Health']
     },
@@ -511,8 +510,8 @@ async function main() {
       tuitionOutState: 64758,
       applicationFee: 65,
       deadlines: {
-        'early_decision': '2024-11-15T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Medicine', 'Liberal Arts', 'Engineering']
     },
@@ -528,8 +527,8 @@ async function main() {
       tuitionOutState: 63150,
       applicationFee: 50,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-05T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Medicine', 'Music', 'Economics']
     },
@@ -545,8 +544,8 @@ async function main() {
       tuitionOutState: 67680,
       applicationFee: 80,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Economics', 'Psychology', 'Biology']
     },
@@ -562,8 +561,8 @@ async function main() {
       tuitionOutState: 33794,
       applicationFee: 75,
       deadlines: {
-        'early_action': '2024-10-15T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Architecture', 'Industrial Design']
     },
@@ -579,8 +578,8 @@ async function main() {
       tuitionOutState: 60438,
       applicationFee: 80,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-05T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Film', 'Drama', 'Economics']
     },
@@ -596,7 +595,7 @@ async function main() {
       tuitionOutState: 46913,
       applicationFee: 80,
       deadlines: {
-        'regular_decision': '2024-11-30T00:00:00Z'
+        'regular_decision': '2025-09-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Economics', 'Biology', 'Environmental Science']
     },
@@ -612,8 +611,8 @@ async function main() {
       tuitionOutState: 28659,
       applicationFee: 30,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2024-11-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-09-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Medicine', 'Journalism']
     },
@@ -629,8 +628,8 @@ async function main() {
       tuitionOutState: 63798,
       applicationFee: 80,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-04T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Communications', 'Medicine']
     },
@@ -646,9 +645,9 @@ async function main() {
       tuitionOutState: 61050,
       applicationFee: 75,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Co-op Programs', 'Health Sciences']
     },
@@ -664,9 +663,9 @@ async function main() {
       tuitionOutState: 65122,
       applicationFee: 50,
       deadlines: {
-        'early_action': '2024-11-15T00:00:00Z',
-        'early_decision': '2024-11-15T00:00:00Z',
-        'regular_decision': '2025-01-15T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Architecture', 'Public Health', 'Liberal Arts']
     },
@@ -682,7 +681,7 @@ async function main() {
       tuitionOutState: 46249,
       applicationFee: 80,
       deadlines: {
-        'regular_decision': '2024-11-30T00:00:00Z'
+        'regular_decision': '2025-09-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Medicine', 'Arts']
     },
@@ -698,7 +697,7 @@ async function main() {
       tuitionOutState: 47170,
       applicationFee: 80,
       deadlines: {
-        'regular_decision': '2024-11-30T00:00:00Z'
+        'regular_decision': '2025-09-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Biology', 'Economics', 'Medicine']
     },
@@ -714,8 +713,8 @@ async function main() {
       tuitionOutState: 66640,
       applicationFee: 85,
       deadlines: {
-        'early_action': '2024-12-01T00:00:00Z',
-        'regular_decision': '2025-01-15T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Film', 'Business', 'Engineering', 'Communications']
     },
@@ -731,7 +730,7 @@ async function main() {
       tuitionOutState: 47788,
       applicationFee: 80,
       deadlines: {
-        'regular_decision': '2024-11-30T00:00:00Z'
+        'regular_decision': '2025-09-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Agriculture', 'Veterinary Medicine', 'Biology']
     },
@@ -747,8 +746,8 @@ async function main() {
       tuitionOutState: 65222,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'International Relations', 'Liberal Arts', 'Medicine']
     },
@@ -764,8 +763,8 @@ async function main() {
       tuitionOutState: 39427,
       applicationFee: 60,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-02-01T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Agriculture', 'Medicine']
     },
@@ -781,9 +780,9 @@ async function main() {
       tuitionOutState: 65730,
       applicationFee: 80,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-15T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Engineering', 'Liberal Arts', 'Nursing']
     },
@@ -799,9 +798,9 @@ async function main() {
       tuitionOutState: 64628,
       applicationFee: 70,
       deadlines: {
-        'early_action': '2024-11-01T00:00:00Z',
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-15T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Medicine', 'Business', 'Nursing']
     },
@@ -817,8 +816,8 @@ async function main() {
       tuitionOutState: 61988,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-15T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Architecture', 'Business', 'Game Design']
     },
@@ -834,8 +833,8 @@ async function main() {
       tuitionOutState: 62230,
       applicationFee: 75,
       deadlines: {
-        'early_decision': '2024-11-01T00:00:00Z',
-        'regular_decision': '2025-01-01T00:00:00Z'
+        'early_decision': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Engineering', 'Business', 'Architecture', 'Liberal Arts']
     },
@@ -851,8 +850,8 @@ async function main() {
       tuitionOutState: 64012,
       applicationFee: 65,
       deadlines: {
-        'early_action': '2024-11-15T00:00:00Z',
-        'regular_decision': '2025-01-05T00:00:00Z'
+        'early_action': '2025-09-01T00:00:00Z',
+        'regular_decision': '2025-11-01T00:00:00Z'
       },
       availableMajors: ['Computer Science', 'Business', 'Communications', 'Liberal Arts', 'Law']
     }

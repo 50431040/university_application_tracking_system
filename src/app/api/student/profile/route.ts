@@ -154,7 +154,6 @@ async function studentProfileHandler(req: NextRequest): Promise<NextResponse> {
               userId: userId,
               name: `${validatedData.firstName} ${validatedData.lastName}`,
               email: validatedData.email,
-              passwordHash: '', // This will be handled by the auth system
               graduationYear: validatedData.graduationYear,
               gpa: validatedData.gpa,
               satScore: validatedData.satScore,

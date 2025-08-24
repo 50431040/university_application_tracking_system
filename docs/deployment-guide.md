@@ -87,17 +87,9 @@ Create a `.env.local` file with these variables:
 DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
 DIRECT_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
 
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT_REF].supabase.co"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="[YOUR_ANON_KEY]"
-SUPABASE_SERVICE_ROLE_KEY="[YOUR_SERVICE_ROLE_KEY]"
-
 # Authentication
 NEXTAUTH_SECRET="your-super-secret-key-here"
-NEXTAUTH_URL="http://localhost:3000" # Change to production URL for deployment
 
-# JWT
-JWT_SECRET="another-super-secret-key-here"
 ```
 
 ### 2. Deploy to Vercel
@@ -154,7 +146,6 @@ vercel
 | `SUPABASE_SERVICE_ROLE_KEY` | `[YOUR_SERVICE_ROLE_KEY]` | Production, Preview, Development |
 | `NEXTAUTH_SECRET` | `your-super-secret-key-here` | Production, Preview, Development |
 | `NEXTAUTH_URL` | `https://your-app.vercel.app` | Production |
-| `JWT_SECRET` | `another-super-secret-key-here` | Production, Preview, Development |
 
 ## Post-Deployment Setup
 
