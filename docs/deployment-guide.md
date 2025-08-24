@@ -51,12 +51,12 @@ npm run db:generate && npm run build
 
 1. Go to your project dashboard on Vercel
 2. Navigate to **Settings** → **Environment Variables**
-3. Add all variables from your `.env.local`:
+3. Add all variables from your `.env`:
 
 ```env
 # Database
-DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
-DIRECT_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres"
+DATABASE_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:6543/postgres?pgbouncer=true"
+DIRECT_URL="postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:6543/postgres?pgbouncer=true"
 
 # Authentication
 NEXTAUTH_SECRET="your-super-secret-key-here"
