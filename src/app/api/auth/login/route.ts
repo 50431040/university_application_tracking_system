@@ -28,7 +28,7 @@ async function loginHandler(req: NextRequest): Promise<NextResponse> {
       lastName: user.lastName
     },
     secret: process.env.NEXTAUTH_SECRET!,
-    salt: process.env.NEXTAUTH_SECRET!
+    salt: 'auth-token'
   })
 
   const response = NextResponse.json(

@@ -4,7 +4,7 @@ import { validateRequest, registerSchema } from '../../_lib/validators'
 import { createSuccessResponse } from '../../_lib/types/response'
 import { ConflictError } from '../../_lib/types/errors'
 import { prisma } from '../../_lib/utils/prisma'
-import { hashPassword, sanitizeUser } from '../../_lib/utils/auth'
+import { hashPasswordMD5, sanitizeUser } from '../../_lib/utils/auth'
 
 async function registerHandler(req: NextRequest) {
   const body = await req.json()
@@ -18,7 +18,7 @@ async function registerHandler(req: NextRequest) {
     throw new ConflictError('User with this email already exists')
   }
 
-  const hashedPassword = await hashPassword(userData.password)
+  const hashedPassword = hashPasswordMD5(userData.password)
 
   const user = await prisma.user.create({
     data: {

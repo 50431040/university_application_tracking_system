@@ -37,7 +37,7 @@ export const studentProfileSchema = z.object({
 export const createApplicationSchema = z.object({
   universityId: z.string().uuid(),
   applicationType: z.enum(['Early Decision', 'Early Action', 'Regular Decision', 'Rolling Admission']),
-  deadline: z.string().datetime()
+  notes: z.string().optional()
 })
 
 export const updateApplicationSchema = z.object({
@@ -56,6 +56,8 @@ export const universitySearchSchema = z.object({
   applicationSystem: z.enum(['Common App', 'Coalition', 'Direct']).optional(),
   minRanking: z.coerce.number().int().min(1).optional(),
   maxRanking: z.coerce.number().int().min(1).optional(),
+  minAcceptanceRate: z.coerce.number().min(0).max(100).optional(),
+  maxAcceptanceRate: z.coerce.number().min(0).max(100).optional(),
   maxTuition: z.coerce.number().min(0).optional(),
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(50).default(20)

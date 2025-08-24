@@ -16,7 +16,9 @@ export async function withAuth(req: NextRequest): Promise<AuthenticatedRequest> 
   const token = await getToken({ 
     req, 
     secret: process.env.NEXTAUTH_SECRET,
-    secureCookie: process.env.NODE_ENV === 'production'
+    secureCookie: process.env.NODE_ENV === 'production',
+    cookieName: 'auth-token',  // Specify the custom cookie name
+    salt: 'auth-token'  // Use the same salt as during encoding
   })
 
   if (!token) {
