@@ -8,9 +8,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { LoadingSpinner } from '@/components/shared/loading-spinner'
+import { getDashboardRoute } from '@/lib/utils'
+import { useLoginRedirect } from '@/hooks/use-role-redirect'
 import CryptoJS from 'crypto-js'
 
 export default function LoginPage() {
+  // Redirect already logged-in users to appropriate dashboard
+  useLoginRedirect()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -26,8 +30,11 @@ export default function LoginPage() {
     try {
       // MD5 hash password before sending
       const hashedPassword = CryptoJS.MD5(password).toString()
-      await login(email, hashedPassword)
-      router.push('/dashboard')
+      const userData = await login(email, hashedPassword)
+      
+      // Redirect to appropriate dashboard based on user role
+      const dashboardRoute = getDashboardRoute(userData.role)
+      router.push(dashboardRoute)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {

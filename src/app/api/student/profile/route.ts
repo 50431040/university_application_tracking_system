@@ -68,7 +68,10 @@ async function studentProfileHandler(req: NextRequest): Promise<NextResponse> {
 
       const profileData = {
         user: user,
-        student: student || {
+        student: student ? {
+          ...student,
+          gpa: student.gpa ? Number(student.gpa) : null
+        } : {
           id: null,
           graduationYear: null,
           gpa: null,
@@ -173,7 +176,10 @@ async function studentProfileHandler(req: NextRequest): Promise<NextResponse> {
 
         return {
           user: updatedUser,
-          student: updatedStudent,
+          student: {
+            ...updatedStudent,
+            gpa: updatedStudent.gpa ? Number(updatedStudent.gpa) : null
+          },
         }
       })
 

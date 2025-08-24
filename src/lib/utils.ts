@@ -14,6 +14,38 @@ export function formatDate(date: string | Date): string {
   })
 }
 
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+
+export function formatGPA(gpa: number | null | undefined): string {
+  if (gpa === null || gpa === undefined) {
+    return 'N/A'
+  }
+  // Convert to number if it's still a Decimal type from Prisma
+  const numericGPA = typeof gpa === 'number' ? gpa : Number(gpa)
+  return isNaN(numericGPA) ? 'N/A' : numericGPA.toFixed(2)
+}
+
+export function getDashboardRoute(userRole: string): string {
+  switch (userRole) {
+    case 'student':
+      return '/dashboard'
+    case 'parent':
+      return '/parent/dashboard'
+    case 'teacher':
+    case 'admin':
+      return '/dashboard' // For future implementation
+    default:
+      return '/dashboard'
+  }
+}
+
 export function getDeadlineColor(deadline: string | Date, status: string): string {
   const deadlineDate = new Date(deadline)
   const now = new Date()
