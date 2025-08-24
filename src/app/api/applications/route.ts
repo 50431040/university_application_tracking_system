@@ -5,7 +5,7 @@ import { validateRequest, createApplicationSchema } from '../_lib/validators'
 import { createSuccessResponse } from '../_lib/types/response'
 import { prisma } from '../_lib/utils/prisma'
 import { AuthenticationError, ValidationError } from '../_lib/types/errors'
-import { APPLICATION_STATUS } from '@/constants/enums'
+import { APPLICATION_STATUS, REQUIREMENT_STATUS } from '@/constants/enums'
 
 async function createApplicationHandler(req: NextRequest): Promise<NextResponse> {
   // Get authenticated user
@@ -68,21 +68,46 @@ async function createApplicationHandler(req: NextRequest): Promise<NextResponse>
     throw new ValidationError('Application for this university and type already exists')
   }
 
-  // Create application
-  const application = await prisma.application.create({
-    data: {
-      studentId: student.id,
-      universityId: applicationData.universityId,
-      applicationType: applicationData.applicationType,
-      deadline: deadline,
-      status: APPLICATION_STATUS.NOT_STARTED,
-      notes: applicationData.notes || null
+  // Get university requirements to create application requirements
+  const universityRequirements = await prisma.universityRequirement.findMany({
+    where: { universityId: applicationData.universityId },
+    orderBy: { requirementType: 'asc' }
+  })
+
+  // Create application and requirements in a transaction
+  const result = await prisma.$transaction(async (tx) => {
+    // Create application
+    const application = await tx.application.create({
+      data: {
+        studentId: student.id,
+        universityId: applicationData.universityId,
+        applicationType: applicationData.applicationType,
+        deadline: deadline,
+        status: APPLICATION_STATUS.NOT_STARTED,
+        notes: applicationData.notes || null
+      }
+    })
+
+    // Create application requirements based on university requirements
+    if (universityRequirements.length > 0) {
+      const applicationRequirements = universityRequirements.map(ur => ({
+        applicationId: application.id,
+        requirementType: ur.requirementType,
+        status: REQUIREMENT_STATUS.NOT_STARTED,
+        notes: ur.description || null
+      }))
+
+      await tx.applicationRequirement.createMany({
+        data: applicationRequirements
+      })
     }
+
+    return application
   })
 
   // Fetch the created application with university data
   const applicationWithUniversity = await prisma.application.findUnique({
-    where: { id: application.id }
+    where: { id: result.id }
   })
 
   return NextResponse.json(createSuccessResponse(applicationWithUniversity))

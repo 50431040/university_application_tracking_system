@@ -253,3 +253,4 @@ npm run seed         # Seed database with demo data
 
 - University data is static and needs regular updates from external sources
 - File upload functionality needs implementation for document management
+- No logout option available, 401 error does not redirect to login page
